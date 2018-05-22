@@ -158,7 +158,60 @@ class Product : public Model {
         }
 
         void edit() {
-
+            if(this->auth->getLevel() != 1) {
+                std::cout << "** Chi quan ly moi co the thay doi hang hoa!" << std::endl;
+                return;
+            }
+            std::string product_code;
+            std::cout << ">> Nhap vao ma san pham: ";
+            fflush(stdin);
+            getline(std::cin, product_code);
+            sql::ResultSet *res = this->select("*", "WHERE code = '" + product_code + "'");
+            if(!res->rowsCount()) {
+                std::cout << "** Ma hang hoa khong ton tai!" << std::endl;
+                delete res;
+                return;
+            }
+            std::cout << "Tim thay: " << res->rowsCount() << std::endl;
+            std::cout << "===== Ket Qua Tim Kiem =====" << std::endl;
+            res->first();
+            std::cout << "ID: " << res->getInt("id") << std::endl;
+            std::cout << "Ma hang hoa: " << res->getString("code") << std::endl;
+            std::cout << "Ten hang hoa: " << res->getString("name") << std::endl;
+            std::cout << "So luong: " << res->getInt("amount") << std:: endl;
+            std::cout << "Mo ta: " << res->getString("description") << std::endl;
+            std::cout << "========================" << std::endl;
+            std::string new_code;
+            std::cout << ">> Nhap vao ma hang moi (de trong neu khong thay doi): ";
+            fflush(stdin);
+            getline(std::cin, new_code);
+            if(new_code == "") {
+                new_code = product_code;
+            }
+            std::string name;
+            std::cout << ">> Nhap vao ten san pham (de trong neu khong thay doi): ";
+            fflush(stdin);
+            getline(std::cin, name);
+            if(name == "") {
+                name = res->getString("name");
+            }
+            int amount;
+            std::cout << ">> Nhap vao so luong: ";
+            std::cin >> amount;
+            std::cin.ignore();
+            std::string description;
+            std::cout << ">> Nhap vao mo ta (de trong neu khong thay doi): ";
+            fflush(stdin);
+            getline(std::cin, description);
+            if(description == "") {
+                description = res->getString("description");
+            }
+            if(this->update("code = '" + new_code + "', name = '" + name + "', amount = '" + std::to_string(amount) + "', description = '" + description + "'", "id = '" + std::to_string(res->getInt("id")) + "'")) {
+                std::cout << "Cap nhat don hang thanh cong!" << std::endl;
+            } else {
+                std::cout << "** Cap nhat hang hoa that bai!" << std::endl;
+            }
+            delete res;
         }
 
         void deleteItem() {
