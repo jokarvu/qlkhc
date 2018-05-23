@@ -91,11 +91,18 @@ class Model {
         int forceDelete(std::string query) {
             try {
                 sql::PreparedStatement *pt;
-                pt = this->con->prepareStatement("DELETE FROM " + this->table + "WHERE " + query);
+                pt = this->con->prepareStatement("DELETE FROM " + this->table + " WHERE " + query);
                 int tmp = pt->executeUpdate();
                 delete pt;
                 return tmp;
             } catch (sql::SQLException &e) {
+                std::cout << "# ERR: SQLException in " << __FILE__;
+                std::cout << "(" << __FUNCTION__ << ") on line "
+                    << __LINE__ << std::endl;
+                std::cout << "# ERR: " << e.what();
+                std::cout << " (MySQL error code: " << e.getErrorCode();
+                std::cout << ", SQLState: " << e.getSQLState() <<
+                    " )" << std::endl;
                 return 0;
             }
         }
@@ -103,11 +110,18 @@ class Model {
         int forceDelete(std::string table_name, std::string query) {
             try {
                 sql::PreparedStatement *pt;
-                pt = this->con->prepareStatement("DELETE FROM " + table_name + "WHERE " + query);
+                pt = this->con->prepareStatement("DELETE FROM " + table_name + " WHERE " + query);
                 int tmp = pt->executeUpdate();
                 delete pt;
                 return tmp;
             } catch (sql::SQLException &e) {
+                std::cout << "# ERR: SQLException in " << __FILE__;
+                std::cout << "(" << __FUNCTION__ << ") on line "
+                    << __LINE__ << std::endl;
+                std::cout << "# ERR: " << e.what();
+                std::cout << " (MySQL error code: " << e.getErrorCode();
+                std::cout << ", SQLState: " << e.getSQLState() <<
+                    " )" << std::endl;
                 return 0;
             }
         }

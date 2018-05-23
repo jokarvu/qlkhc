@@ -23,7 +23,7 @@ class Bill : public Model {
             int menu;
             while(true) {
                 std::cout << "===== Menu Hoa Don Xuat/Nhap =====" << std::endl;
-                std::cout << "\t1. In hoa don\n\t2. Tim hoa don\n\t3. Tao hoa don\n\t4. Sua hoa don\n\t5. Xoa man hinh\n\t6. Ve menu chinh" << std::endl;
+                std::cout << "\t1. In hoa don\n\t2. Tim hoa don\n\t3. Tao hoa don\n\t4. Sua hoa don\n\t5. Xoa don hang\n\t6. Xoa man hinh\n\t7. Ve menu chinh" << std::endl;
                 enter_command:
                 std::cout << ">> Nhap lenh: ";
                 std::cin >> menu;
@@ -48,9 +48,12 @@ class Bill : public Model {
                         this->edit();
                         break;
                     case 5:
-                        system("clear");
+                        this->deleteItem();
                         break;
                     case 6:
+                        system("clear");
+                        break;
+                    case 7:
                         return;
                     default:
                         std::cout << "Lenh khong hop le. Moi ban nhap lai!" << std::endl;
@@ -192,7 +195,7 @@ class Bill : public Model {
             res = this->select("bills.*, users.username as user_name, products.code as product_code, products.name as product_name, products.amount as amount_left", "LEFT JOIN products ON products.id = bills.product_id LEFT JOIN users ON users.id = bills.user_id WHERE bills.id = '" + std::to_string(bill_id) + "'");
             // Neu khong co don hang nao co id vua nhap thi thong bao loi va ket thuc
             if(!res->rowsCount()) {
-                std::cout << "Hoan don khong ton tai!" << std::endl;
+                std::cout << "Hoa don khong ton tai!" << std::endl;
                 return;
             }
             // Neu co hoa don co id vua nhap thi in ra
@@ -291,7 +294,6 @@ class Bill : public Model {
                 }
             }
             // Cap nhat hang moi thay doi
-            std::cout << product_code << "\t" << tmp_amount << std::endl;
             if(this->update("products", "amount = '" + std::to_string(tmp_amount) + "'", "code = '" + product_code + "'")) {
                 std::cout << "Sua hoa don thanh cong!" << std::endl;
             } else {
@@ -361,15 +363,15 @@ class Bill : public Model {
             int reset_amount = 0;
             if(res->getInt("type") == 1) {
                 reset_amount = res->getInt("amount_left") - res->getInt("amount");
-                if(reset_amount <= 0) {
+                if(reset_amount < 0) {
                     std::cout << "Warning: So luong hanh trong kho khong du (con lai: " << std::to_string(res->getInt("amount_left")) << ")" << std::endl;
                     return;
                 }
             } else {
                 reset_amount = res->getInt("amount_left") + res->getInt("amount");
             }
-            if(this->update("products", "amount = '" + std::to_string(reset_amount) + "'", "WHERE id = '" + std::to_string(res->getInt("product_id")) + "'")) {
-                this->forceDelete("WHERE id = '" + std::to_string(res->getInt("id")) + "'");
+            if(this->update("products", "amount = '" + std::to_string(reset_amount) + "'", "id = '" + std::to_string(res->getInt("product_id")) + "'")) {
+                this->forceDelete("id = '" + std::to_string(res->getInt("id")) + "'");
                 std::cout << "Xoa hoa don thanh cong thanh cong!" << std::endl;
             } else {
                 std::cout << "Co loi xay ra vui long thu lai sau!" << std::endl;

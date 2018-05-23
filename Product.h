@@ -17,7 +17,7 @@ class Product : public Model {
             while(true) {
                 std::cout << std::endl;
                 std::cout << "====== Menu Hang Hoa ======" << std::endl;
-                std::cout << "\t1. Danh sach hang hoa\n\t2. Tim kiem hang hoa\n\t3. Them hang hoa\n\t4. Sua hang hoa\n\t5. Xoa man hinh\n\t6. Quay lai" << std::endl;
+                std::cout << "\t1. Danh sach hang hoa\n\t2. Tim kiem hang hoa\n\t3. Them hang hoa\n\t4. Sua hang hoa\n\t5. Xoa hang hoa\n\t6. Xoa man hinh\n\t7. Quay lai" << std::endl;
                 enter_command:
                 std::cout << ">> Nhap lenh: ";
                 std::cin >> menu;
@@ -42,9 +42,12 @@ class Product : public Model {
                         this->edit();
                         break;
                     case 5:
-                        system("clear");
+                        this->deleteItem();
                         break;
                     case 6:
+                        system("clear");
+                        break;
+                    case 7:
                         system("clear");
                         return;
                     default:
@@ -215,7 +218,7 @@ class Product : public Model {
         }
 
         void deleteItem() {
-            if(this->auth->getId() != 1) {
+            if(this->auth->getLevel() != 1) {
                 std::cout << "** Chi quan ly moi co quyen xoa hang hoa!" << std::endl;
                 return;
             }
@@ -232,13 +235,12 @@ class Product : public Model {
             }
             std::cout << "Tim thay: " << res->rowsCount() << std::endl;
             std::cout << "===== Ket Qua Tim Kiem =====" << std::endl;
-            while(res->next()) {
-                std::cout << "ID: " << res->getInt("id") << std::endl;
-                std::cout << "Ma hang hoa: " << res->getString("code") << std::endl;
-                std::cout << "Ten hang hoa: " << res->getString("name") << std::endl;
-                std::cout << "So luong: " << res->getInt("amount") << std:: endl;
-                std::cout << "========================" << std::endl;
-            }
+            res->first();
+            std::cout << "ID: " << res->getInt("id") << std::endl;
+            std::cout << "Ma hang hoa: " << res->getString("code") << std::endl;
+            std::cout << "Ten hang hoa: " << res->getString("name") << std::endl;
+            std::cout << "So luong: " << res->getInt("amount") << std:: endl;
+            std::cout << "========================" << std::endl;
             char choice;
             enter_choice:
             std::cout << ">> Ban cho chac chan muon xoa hang hoa tren va tat ca thong tin don hang cua hang hoa khong (y/n) : ";
@@ -261,8 +263,8 @@ class Product : public Model {
                     goto enter_choice;
                     break;
             }
-            if(this->forceDelete("bills", "WHERE product_id = '" + std::to_string(res->getInt("id")) + "'")) {
-                this->forceDelete("WHERE id = '" + std::to_string(res->getInt("id")) + "'");
+            if(this->forceDelete("bills", "product_id = '" + std::to_string(res->getInt("id")) + "'")) {
+                this->forceDelete("id = '" + std::to_string(res->getInt("id")) + "'");
                 std::cout << "Xoa hang hoa thanh cong!" << std::endl;
             } else {
                 std::cout << "** Co loi xay ra vui long thu lai sau!" << std::endl;

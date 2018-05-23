@@ -29,7 +29,7 @@ class Controller {
             int menu;
             while(true) {
                 std::cout << "===== Main Menu =====" << std::endl;
-                std::cout << "\t1. Ca nhan\n\t2. Hang hoa\n\t3. Hoa don\n\t4. Xoa man hinh\n\t5. Thoat" << std::endl;
+                std::cout << "\t1. Ca nhan\n\t2. Hang hoa\n\t3. Hoa don\n\t4. Thong ke\n\t5. Xoa man hinh\n\t6. Thoat" << std::endl;
                 enter_command:
                 std::cout << ">> Nhap lenh: ";
                 std::cin >> menu;
@@ -56,9 +56,12 @@ class Controller {
                         this->bill->menu();
                         break;
                     case 4:
-                        system("clear");
+                        this->dashboard();
                         break;
                     case 5:
+                        system("clear");
+                        break;
+                    case 6:
                         return;
                     default:
                         std::cout << "Lenh khong hop le!" << std::endl;
@@ -109,6 +112,21 @@ class Controller {
             this->product->auth->setId(res->getInt("id"));
             this->product->auth->setLevel(res->getInt("level"));
             std::cout << "Dang nhap thanh cong!" << std::endl;
+            delete res;
+        }
+
+        void dashboard() {
+            sql::ResultSet *res;
+            res = this->product->select("id", "");
+            int product = res->rowsCount();
+            res = this->bill->select("id", "WHERE type = 1");
+            int inbill = res->rowsCount();
+            res =  this->bill->select("id", "WHERE type = 2");
+            int outbill = res->rowsCount();
+            std::cout << "====== Thong Ke ======" << std::endl;
+            std::cout << "So hang hoa co trong kho: " << product << std::endl;
+            std::cout << "So hoa don xuat: " << outbill << std::endl;
+            std::cout << "So hoa don nhap: " << inbill << std::endl;
             delete res;
         }
 };
